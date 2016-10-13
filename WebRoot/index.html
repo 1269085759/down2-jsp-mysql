@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>donw2-多文件演示页面</title>
+    <link type="text/css" href="js/down.css" rel="Stylesheet" />
+    <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="js/down.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/down.file.js" charset="utf-8"></script>
+</head>
+<body>
+    <input type="button" value="下载测试文件" onclick="StartDown()" />
+    <p><a href="db/clear.jsp" target="_blank">清空数据库</a></p>
+    <p><a href="index-single.htm" target="_blank">单文件下载</a></p>
+    <div id="downDiv"></div>
+    <script type="text/javascript" language="javascript">
+        var downer = new DownloaderMgr();
+        downer.Config["Folder"] = "F:\\ftp\\";//设置默认下载路径。
+        //下载事件
+        downer.event.downComplete = function (obj) { $(document.body).append('<div>本地路径：'+obj.fileSvr.pathLoc+'</div>'); };
+        downer.event.downError = function (obj, err) { };
+        downer.event.queueComplete = function () { $(document.body).append("<div>队列完成</div>"); };
+
+    	$(document).ready(function ()
+    	{
+    	    downer.loadTo("downDiv");
+    	});
+		
+		function StartDown()
+		{
+		    downer.add_file("http://down.sandai.net/thunder7/Thunder_dl_7.9.6.4502.exe"/*,自定义名称.exe*/);
+		    //downer.add_file("http://www.lingoes.cn/download/lingoes_2.9.1_cn.exe");
+		    //downer.add_file("http://www.ncmem.com/images/ico-ftp.jpg");
+		   // downer.add_file("http://www.ncmem.com/images/ico-up.jpg");
+		    //downer.add_file("http://localhost:1105/db/down.aspx", "test.jpg");
+		    //downer.add_file("http://localhost:1106/db/down.aspx");
+		    //downer.add_file("http://www.ncmem.com/images/ico-capture.jpg");
+		    //downer.add_file("http://www.ncmem.com/images/ico-imageuploader.gif");
+		    //downer.add_file("http://www.ncmem.com/images/ico-wordpaster.gif");
+		    downer.start_queue();//下载队列
+		}
+		
+	</script>
+</body>
+</html>
