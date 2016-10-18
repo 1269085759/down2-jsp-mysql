@@ -90,12 +90,15 @@ function FileDownloader(fileLoc, mgr)
         this.browser.stopFile(this.fileSvr);
     };
 
-    this.delete = function ()
+    this.remove = function ()
     {
         this.browser.stopFile(this.fileSvr);
         //从上传列表中删除
         this.ui.split.remove();
         this.ui.div.remove();
+        //
+        this.Manager.remove_url(this.fileSvr.fileUrl);
+
         this.svr_delete();
     };
 
@@ -112,6 +115,7 @@ function FileDownloader(fileLoc, mgr)
     //在出错，停止中调用
     this.svr_update = function ()
     {
+        if (!this.Config.DataBase) return;//
         if (this.fileSvr.idSvr == 0) return;
 
         var param = jQuery.extend({}, this.fields, this.fileSvr, { time: new Date().getTime() });
@@ -130,6 +134,7 @@ function FileDownloader(fileLoc, mgr)
     //在服务端创建一个数据，用于记录下载信息，一般在HttpDownloader_BeginDown中调用
     this.svr_create = function ()
     {
+        if (!this.Config.DataBase) return;//
         //已记录将不再记录
         if (this.fileSvr.idSvr) return;
         var param = jQuery.extend({}, this.fields, {file:encodeURIComponent(JSON.stringify(this.fileSvr)), time: new Date().getTime() });
@@ -155,7 +160,8 @@ function FileDownloader(fileLoc, mgr)
     this.isComplete = function () { return this.State == HttpDownloaderState.Complete; };
     this.svr_delete = function ()
     {
-        var param = jQuery.extend({}, this.fields, {fid:this.fileSvr.idSvr,time:new Date().getTime()});
+        if (!this.Config.DataBase) return;//
+        var param = jQuery.extend({}, this.fields, { fid: this.fileSvr.idSvr, time: new Date().getTime() });
         $.ajax({
             type: "GET"
             , dataType: 'jsonp'
@@ -171,14 +177,14 @@ function FileDownloader(fileLoc, mgr)
         });
     };
 
-    this.down_complete = function ()
+    this.down_complete = function (json)
     {
         this.hideBtns();
         this.event.downComplete(this);//biz event
         //this.ui.btn.del.text("打开");
         this.ui.process.css("width", "100%");
         this.ui.percent.text("(100%)");
-        this.ui.msg.text("下载完成");
+        this.ui.msg.text("下载完成 耗时："+json.time);
         this.State = HttpDownloaderState.Complete;
         this.svr_delete();
         this.Manager.filesCmp.push(this);

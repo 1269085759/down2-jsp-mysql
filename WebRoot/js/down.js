@@ -47,6 +47,7 @@ function DownloaderMgr()
 		, "License"		: ""//
 		, "Cookie"		: ""//
 		, "ThreadCount"	: 1//并发数
+		, "DataBase"	: false//启用数据库支持
 		, "FilePart"	: 1048576//文件块大小，更新进度时使用，计算器：http://www.beesky.com/newsite/bit_byte.htm
         , "UrlCreate"   : "http://localhost:8080/Downloader2MySQL/db/d_create.jsp"
         , "UrlDel"      : "http://localhost:8080/Downloader2MySQL/db/d_del.jsp"
@@ -178,7 +179,7 @@ function DownloaderMgr()
 	{
 	    $.each(this.filesCmp, function (i,n)
 	    {
-	        n.delete();
+	        n.remove();
 	    });
 	    this.filesCmp.length = 0;
 	};
@@ -229,10 +230,10 @@ function DownloaderMgr()
 	    uiMsg.text("");
 	    uiSize.text("0字节");
 	    uiPercent.text("(0%)");
-	    btnDel.click(function () { downer.delete(); });
+	    btnDel.click(function () { downer.remove(); });
 	    btnStop.click(function () { downer.stop(); });
 	    btnDown.click(function () { downer.down(); });
-	    btnCancel.click(function () { downer.delete(); });
+	    btnCancel.click(function () { downer.remove(); });
 
 	    downer.ready(); //准备
 	    return downer;
@@ -574,6 +575,7 @@ function DownloaderMgr()
     //加载未未完成列表
 	this.loadFiles = function ()
 	{
+	    if (!this.Config.DataBase) return;
 	    var param = jQuery.extend({}, this.Fields, { time: new Date().getTime() });
 
 	    $.ajax({
